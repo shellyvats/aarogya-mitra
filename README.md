@@ -1,4 +1,4 @@
-# 🌿 Aarogya Mitra — Rural Health Access Navigator v2
+# 🌿 Aarogya Mitra — Rural Health Access Navigator 
 
 AI-powered health assistant with animated UI, ML symptom classifier,
 BMI calculator, interactive maps, admin dashboard, and WhatsApp integration.
