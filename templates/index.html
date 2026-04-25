@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Aarogya Mitra — Rural Health Navigator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Lora:ital,wght@0,600;1,500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── THEME VARIABLES ── */
+[data-theme="light"]{
+  --bg:#f4f6f5;--white:#fff;--surface:#eef1ef;--border:#dde3de;--border2:#c8d4ca;
+  --text:#0f1f14;--text2:#4a6354;--text3:#8fa898;
+  --card-bg:#ffffff;--input-bg:#f4f6f5;
+  --shadow:0 2px 12px rgba(0,0,0,.07);--shadow-md:0 4px 20px rgba(0,0,0,.1);
+}
+[data-theme="dark"]{
+  --bg:#0d1117;--white:#161b22;--surface:#1c2330;--border:#30363d;--border2:#444c56;
+  --text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+  --card-bg:#161b22;--input-bg:#1c2330;
+  --shadow:0 2px 12px rgba(0,0,0,.3);--shadow-md:0 4px 20px rgba(0,0,0,.4);
+}
+
+:root{
+  --green:#1a8a50;--green2:#22b366;--green-lt:#e6f4ec;--green-md:#c3e8d0;
+  --teal:#0e8585;--teal-lt:#e0f4f4;
+  --red:#d42b2b;--red-lt:#fdeaea;--red-md:#fbc5c5;
+  --amber:#c47800;--amber-lt:#fff3d6;
+  --purple:#6f42c1;--purple-lt:#f0ebff;
+  --radius:14px;--radius-sm:8px;
+}
+[data-theme="dark"]{
+  --green-lt:rgba(26,138,80,.15);--green-md:rgba(26,138,80,.3);
+  --teal-lt:rgba(14,133,133,.15);
+  --red-lt:rgba(212,43,43,.15);--red-md:rgba(212,43,43,.3);
+  --amber-lt:rgba(196,120,0,.15);
+  --purple-lt:rgba(111,66,193,.15);
+}
+
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;transition:background .25s,color .25s}
+
+/* ── HEADER ── */
+header{height:60px;background:var(--white);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;flex-shrink:0;z-index:200;box-shadow:var(--shadow);transition:background .25s,border-color .25s}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:36px;height:36px;background:linear-gradient(135deg,var(--green),var(--teal));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;animation:breathe 4s ease-in-out infinite;flex-shrink:0}
+@keyframes breathe{0%,100%{box-shadow:0 0 0 0 rgba(26,138,80,0)}50%{box-shadow:0 0 0 6px rgba(26,138,80,.1)}}
+.brand-name{font-family:'Lora',serif;font-size:16px;color:var(--text)}
+.brand-name em{color:var(--green);font-style:italic}
+.brand-tag{font-size:10px;color:var(--text3);display:block;margin-top:-2px}
+.hdr-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+
+/* Language selector */
+.lang-sel{padding:5px 10px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;cursor:pointer;outline:none;transition:all .15s}
+.lang-sel:focus{border-color:var(--green)}
+
+/* Theme toggle */
+.theme-toggle{width:34px;height:34px;border-radius:50%;border:1px solid var(--border);background:var(--surface);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all .15s;color:var(--text2)}
+.theme-toggle:hover{border-color:var(--green);background:var(--green-lt)}
+
+.online-pill{display:flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;background:var(--green-lt);border:1px solid var(--green-md);font-size:11px;font-weight:600;color:var(--green)}
+.online-dot{width:6px;height:6px;background:var(--green2);border-radius:50%;animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.hdr-btn{padding:5px 11px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--white);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;text-decoration:none;display:inline-block}
+.hdr-btn:hover{border-color:var(--green);color:var(--green);background:var(--green-lt)}
+
+/* Fitness button */
+.fitness-btn{padding:5px 12px;border-radius:var(--radius-sm);border:none;background:linear-gradient(135deg,var(--purple),#8250df);color:white;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px}
+.fitness-btn:hover{opacity:.9;transform:scale(1.04)}
+
+/* ── LAYOUT ── */
+.layout{flex:1;display:grid;grid-template-columns:236px 1fr 258px;overflow:hidden;height:calc(100vh - 60px)}
+
+/* ── LEFT SIDEBAR ── */
+.sidebar-l{background:var(--white);border-right:1px solid var(--border);overflow-y:auto;padding:14px 10px;display:flex;flex-direction:column;gap:14px;transition:background .25s,border-color .25s}
+.sidebar-l::-webkit-scrollbar{width:3px}
+.sidebar-l::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.sec-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:7px;padding-left:3px}
+.qa-btn{width:100%;display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:var(--radius-sm);border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:500;color:var(--text2);cursor:pointer;text-align:left;transition:all .15s;margin-bottom:2px}
+.qa-btn:hover{background:var(--green-lt);color:var(--green);transform:translateX(3px)}
+.qi{font-size:16px;flex-shrink:0;width:22px}
+.em-box{background:var(--red-lt);border:1px solid var(--red-md);border-radius:var(--radius-sm);padding:11px}
+.em-box h4{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--red);margin-bottom:8px}
+.em-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(212,43,43,.1)}
+.em-row:last-child{border:none}
+.em-row span{font-size:11px;color:var(--text2)}
+.em-row a{font-size:13px;font-weight:800;color:var(--red);text-decoration:none}
+.em-row a:hover{text-decoration:underline}
+.pill-wrap{display:flex;flex-wrap:wrap;gap:5px}
+.spill{padding:4px 10px;border-radius:20px;background:var(--teal-lt);border:1px solid rgba(14,133,133,.25);font-size:11px;font-weight:600;color:var(--teal);cursor:pointer;transition:all .15s}
+.spill:hover{background:var(--teal);color:white;border-color:var(--teal)}
+
+/* ── CHAT ── */
+.chat-col{display:flex;flex-direction:column;overflow:hidden}
+.chat-feed{flex:1;overflow-y:auto;padding:18px 20px 10px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+.chat-feed::-webkit-scrollbar{width:4px}
+.chat-feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+
+/* Welcome */
+.welcome{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);animation:rise .5s cubic-bezier(.22,1,.36,1);transition:background .25s,border-color .25s}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.welcome-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.w-av{width:40px;height:40px;background:linear-gradient(135deg,var(--green),var(--teal));border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.welcome h2{font-family:'Lora',serif;font-size:17px;line-height:1.3;color:var(--text)}
+.welcome h2 em{font-style:italic;color:var(--green)}
+.welcome-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.welcome p{font-size:12.5px;color:var(--text2);line-height:1.7;margin-bottom:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:5px 12px;border-radius:20px;background:var(--surface);border:1px solid var(--border);font-size:11.5px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s}
+.chip:hover{background:var(--green-lt);border-color:var(--green-md);color:var(--green)}
+
+/* Messages */
+.msg-row{display:flex;gap:8px;animation:rise .25s cubic-bezier(.22,1,.36,1)}
+.msg-row.user{flex-direction:row-reverse}
+.av{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;margin-top:2px}
+.av-bot{background:linear-gradient(135deg,var(--green),var(--teal))}
+.av-user{background:rgba(99,102,241,.2)}
+.bubble{max-width:70%;padding:10px 14px;border-radius:14px;font-size:13px;line-height:1.65;white-space:pre-wrap;word-break:break-word;box-shadow:var(--shadow)}
+.b-bot{background:var(--white);border:1px solid var(--border);border-top-left-radius:4px;color:var(--text);transition:background .25s,border-color .25s}
+.b-user{background:var(--green);color:white;border-top-right-radius:4px}
+.sev{display:inline-block;padding:1px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:4px}
+.sev-c{background:var(--red-lt);color:var(--red);border:1px solid var(--red-md)}
+.sev-h{background:var(--amber-lt);color:var(--amber);border:1px solid rgba(196,120,0,.3)}
+.sev-m{background:var(--green-lt);color:var(--green);border:1px solid var(--green-md)}
+
+/* Remedy suggestion button inside bot message */
+.remedy-btn{display:inline-flex;align-items:center;gap:6px;margin-top:10px;padding:7px 14px;border-radius:20px;background:linear-gradient(135deg,rgba(26,138,80,.1),rgba(14,133,133,.1));border:1px solid var(--green-md);color:var(--green);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.remedy-btn:hover{background:var(--green);color:white;transform:translateY(-1px);box-shadow:var(--shadow-md)}
+
+/* Typing */
+.typing-row{display:flex;gap:8px;align-items:flex-end}
+.typing-bub{display:flex;gap:4px;padding:10px 14px;background:var(--white);border:1px solid var(--border);border-radius:14px;border-top-left-radius:4px;box-shadow:var(--shadow);transition:background .25s}
+.td{width:6px;height:6px;background:var(--text3);border-radius:50%;animation:bounce 1.2s infinite}
+.td:nth-child(2){animation-delay:.15s}.td:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
+
+/* Input */
+.input-area{padding:10px 20px 14px;background:var(--white);border-top:1px solid var(--border);transition:background .25s,border-color .25s}
+.input-box{display:flex;align-items:flex-end;gap:7px;background:var(--input-bg);border:1.5px solid var(--border);border-radius:12px;padding:8px 8px 8px 14px;transition:all .2s}
+.input-box:focus-within{border-color:var(--green);background:var(--white);box-shadow:0 0 0 3px rgba(26,138,80,.08)}
+#userInput{flex:1;background:transparent;border:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);resize:none;max-height:90px;line-height:1.5}
+#userInput::placeholder{color:var(--text3)}
+.icon-btn{width:34px;height:34px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:all .15s;color:var(--text2)}
+.icon-btn:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-lt)}
+.icon-btn.active{background:var(--teal-lt);border-color:var(--teal);color:var(--teal)}
+.icon-btn.rec{background:var(--red-lt);border-color:var(--red);color:var(--red);animation:rec-pulse .8s infinite}
+@keyframes rec-pulse{0%,100%{box-shadow:none}50%{box-shadow:0 0 0 5px rgba(212,43,43,.15)}}
+.send-btn{width:34px;height:34px;border-radius:var(--radius-sm);border:none;background:var(--green);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:white;transition:all .15s}
+.send-btn:hover{background:#15783d;transform:scale(1.06)}
+.hint{font-size:10px;color:var(--text3);text-align:center;margin-top:5px}
+
+/* ── RIGHT PANEL ── */
+.sidebar-r{background:var(--white);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:background .25s,border-color .25s}
+.r-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto}
+.r-tabs::-webkit-scrollbar{height:2px}
+.r-tab{flex-shrink:0;padding:10px 10px;font-size:10px;font-weight:600;color:var(--text3);cursor:pointer;text-align:center;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.r-tab.on{color:var(--green);border-bottom-color:var(--green)}
+.r-tab:hover{color:var(--text2)}
+.r-body{flex:1;overflow-y:auto;padding:14px 12px}
+.r-body::-webkit-scrollbar{width:3px}
+.r-body::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+.pane{display:none;animation:rise .25s ease}
+.pane.on{display:block}
+.r-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text3);margin-bottom:10px}
+
+/* ── REMEDIES PANE ── */
+.remedy-dis-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+.rdis-card{padding:9px 6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;text-align:center;transition:all .15s}
+.rdis-card:hover,.rdis-card.sel{border-color:var(--green);background:var(--green-lt)}
+.rdis-icon{font-size:18px;margin-bottom:2px}
+.rdis-lbl{font-size:10px;font-weight:600;color:var(--text2)}
+.remedy-content{display:none;animation:rise .3s ease}
+.remedy-content.on{display:block}
+.rem-section{margin-bottom:14px}
+.rem-sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.rem-sec-title.ayur{color:#b5651d}
+.rem-sec-title.home{color:var(--teal)}
+.rem-item{padding:7px 10px;border-radius:var(--radius-sm);background:var(--surface);border:1px solid var(--border);margin-bottom:5px;font-size:11.5px;color:var(--text2);line-height:1.5}
+.rem-warning{padding:8px 10px;border-radius:var(--radius-sm);background:var(--amber-lt);border:1px solid rgba(196,120,0,.3);font-size:11px;color:var(--amber);font-weight:500;margin-top:8px}
+.rem-back{padding:6px 12px;border-radius:20px;background:var(--surface);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text2);cursor:pointer;margin-bottom:12px;transition:all .15s}
+.rem-back:hover{border-color:var(--green);color:var(--green)}
+
+/* ── FITNESS PANE ── */
+.fit-cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.fit-cat{padding:12px 8px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;text-align:center;transition:all .15s}
+.fit-cat:hover{border-color:var(--purple);background:var(--purple-lt)}
+.fit-cat.sel{border-color:var(--purple);background:var(--purple-lt)}
+.fc-icon{font-size:22px;margin-bottom:3px}
+.fc-lbl{font-size:11px;font-weight:600;color:var(--text2)}
+.fc-dur{font-size:9px;color:var(--text3)}
+.fit-content{display:none;animation:rise .3s ease}
+.fit-content.on{display:block}
+.fit-back{padding:6px 12px;border-radius:20px;background:var(--surface);border:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text2);cursor:pointer;margin-bottom:10px;transition:all .15s}
+.fit-back:hover{border-color:var(--purple);color:var(--purple)}
+.fit-water-tip{padding:8px 10px;border-radius:var(--radius-sm);background:rgba(14,133,133,.08);border:1px solid var(--border);font-size:11.5px;color:var(--teal);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ex-card{padding:10px 12px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:7px}
+.ex-top{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.ex-icon{font-size:18px}
+.ex-name{font-size:12px;font-weight:700;color:var(--text)}
+.ex-reps{font-size:11px;font-weight:600;color:var(--purple)}
+.ex-benefit{font-size:11px;color:var(--text2);line-height:1.4}
+.water-row{padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px}
+.water-time{font-size:11px;font-weight:700;color:var(--teal)}
+.water-amt{font-size:12px;font-weight:600;color:var(--text);margin:1px 0}
+.water-benefit{font-size:10px;color:var(--text3)}
+.diet-meal{padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px}
+.diet-meal-name{font-size:11px;font-weight:700;color:var(--green)}
+.diet-meal-sug{font-size:11px;color:var(--text2);margin-top:2px;line-height:1.4}
+.sleep-tip{padding:9px 11px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:6px}
+.sleep-tip-top{display:flex;align-items:center;gap:7px;margin-bottom:3px}
+.sleep-tip-icon{font-size:16px}
+.sleep-tip-title{font-size:12px;font-weight:700;color:var(--text)}
+.sleep-tip-detail{font-size:11px;color:var(--text2);line-height:1.4}
+.fit-tip-box{padding:8px 10px;border-radius:var(--radius-sm);background:rgba(111,66,193,.08);border:1px solid rgba(111,66,193,.2);font-size:11.5px;color:var(--purple);margin-top:10px;font-style:italic}
+.list-tip{padding:6px 10px;background:var(--surface);border-radius:var(--radius-sm);font-size:11px;color:var(--text2);margin-bottom:4px;border-left:3px solid var(--teal)}
+
+/* BMI pane */
+.field-label{font-size:11px;font-weight:600;color:var(--text2);margin-bottom:4px}
+.field-input{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);background:var(--input-bg);outline:none;margin-bottom:9px;transition:all .15s}
+.field-input:focus{border-color:var(--green);background:var(--white)}
+.action-btn{width:100%;padding:9px;border-radius:var(--radius-sm);border:none;background:var(--green);color:white;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:12px;transition:all .15s}
+.action-btn:hover{background:#15783d}
+.bmi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;text-align:center;animation:rise .4s ease}
+.bmi-num{font-size:42px;font-weight:700;line-height:1}
+.bmi-cat{font-size:13px;font-weight:600;margin:3px 0 12px}
+.gauge{height:6px;border-radius:6px;background:linear-gradient(90deg,#1a8a50,#c47800,#d42b2b);position:relative;margin-bottom:4px}
+.needle{position:absolute;top:-4px;width:3px;height:14px;background:var(--text);border-radius:2px;transform:translateX(-50%);transition:left .8s cubic-bezier(.22,1,.36,1)}
+.gauge-labels{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-bottom:10px}
+.bmi-advice-text{font-size:11px;color:var(--text2);line-height:1.6;text-align:left}
+.bmi-ideal{font-size:11px;color:var(--text2);margin-bottom:8px}
+
+/* Map */
+#mapDiv{height:190px;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--border);margin-bottom:8px}
+.map-input{width:100%;padding:7px 11px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text);background:var(--input-bg);outline:none;margin-bottom:6px;transition:border-color .15s}
+.map-input:focus{border-color:var(--green);background:var(--white)}
+.fac-card{padding:9px 11px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:5px;cursor:pointer;transition:all .15s;background:var(--white)}
+.fac-card:hover{border-color:var(--green);background:var(--green-lt)}
+.fac-type{font-size:10px;font-weight:600;color:var(--teal)}
+.fac-name{font-size:12px;font-weight:600;color:var(--text)}
+.fac-meta{font-size:10px;color:var(--text2);margin-top:2px}
+.fac-em{font-size:10px;font-weight:600;margin-top:3px}
+.em-yes{color:var(--green)}.em-no{color:var(--text3)}
+
+/* Schemes pane */
+.sc-item{padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:7px;cursor:pointer;transition:all .15s;background:var(--white)}
+.sc-item:hover{border-color:var(--teal)}
+.sc-name{font-size:12px;font-weight:700;color:var(--teal);margin-bottom:3px}
+.sc-benefit{font-size:11px;color:var(--text2);line-height:1.5}
+.sc-how{font-size:10px;color:var(--text3);margin-top:4px}
+
+/* Scheme detail modal */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.overlay.open{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--white);border:1px solid var(--border);border-radius:16px;padding:22px;max-width:400px;width:90%;box-shadow:var(--shadow-md);animation:rise .3s ease;max-height:85vh;overflow-y:auto}
+.modal h3{font-size:15px;font-weight:700;margin-bottom:10px;color:var(--text)}
+.modal-body{font-size:13px;color:var(--text2);line-height:1.8}
+.modal-body a{color:var(--teal)}
+.modal-close-btn{width:100%;margin-top:14px;padding:9px;border-radius:var(--radius-sm);border:none;background:var(--green);color:white;font-family:'DM Sans',sans-serif;font-weight:600;cursor:pointer}
+
+/* WhatsApp pane */
+.wa-box{background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.2);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px}
+.wa-box h4{font-size:12px;font-weight:700;color:#25d366;margin-bottom:9px}
+.wa-step{display:flex;gap:8px;margin-bottom:7px;align-items:flex-start}
+.wa-n{width:18px;height:18px;border-radius:50%;background:#25d366;color:white;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.wa-step p{font-size:11px;color:var(--text2);line-height:1.5}
+.code-box{background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:6px 10px;font-family:monospace;font-size:11px;color:var(--green);margin:4px 0}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){.layout{grid-template-columns:1fr}.sidebar-l,.sidebar-r{display:none}.bubble{max-width:86%}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="brand-icon">🌿</div>
+    <div>
+      <div class="brand-name">Aarogya <em>Mitra</em></div>
+      <span class="brand-tag" id="brandTag">Rural Health Access Navigator</span>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <!-- Language selector -->
+    <select class="lang-sel" id="langSel" onchange="setLang(this.value)" title="Select Language">
+      <option value="en">🇬🇧 English</option>
+      <option value="hi">🇮🇳 हिंदी</option>
+      <option value="bn">🇧🇩 বাংলা</option>
+      <option value="ta">🇮🇳 தமிழ்</option>
+      <option value="te">🇮🇳 తెలుగు</option>
+    </select>
+    <!-- Dark/Light toggle -->
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌙</button>
+    <!-- Fitness button -->
+    <button class="fitness-btn" onclick="openFitnessPanel()">🏃 Daily Fitness</button>
+    <div class="online-pill"><div class="online-dot"></div><span id="statusLbl">Online 24/7</span></div>
+    <a class="hdr-btn" href="/admin">📊 Dashboard</a>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar-l">
+    <div>
+      <div class="sec-lbl" id="lbl-quick">Quick Actions</div>
+      <button class="qa-btn" onclick="send('Help')"><span class="qi">📋</span><span data-key="help">What can you do?</span></button>
+      <button class="qa-btn" onclick="send('I have fever')"><span class="qi">🌡️</span><span data-key="fever">I have fever</span></button>
+      <button class="qa-btn" onclick="send('Malaria symptoms')"><span class="qi">🦟</span><span data-key="malaria">Malaria symptoms</span></button>
+      <button class="qa-btn" onclick="send('Dengue symptoms')"><span class="qi">🩸</span><span data-key="dengue">Dengue symptoms</span></button>
+      <button class="qa-btn" onclick="send('TB symptoms')"><span class="qi">💊</span><span data-key="tb">TB symptoms</span></button>
+      <button class="qa-btn" onclick="send('Snake bite')"><span class="qi">🐍</span><span data-key="snake">Snake bite</span></button>
+      <button class="qa-btn" onclick="send('Heart attack')"><span class="qi">❤️</span><span data-key="heart">Heart attack</span></button>
+      <button class="qa-btn" onclick="send('Pregnancy complications')"><span class="qi">🤱</span><span data-key="pregnancy">Pregnancy help</span></button>
+      <button class="qa-btn" onclick="send('Mental health')"><span class="qi">🧠</span><span data-key="mental">Mental health</span></button>
+      <button class="qa-btn" onclick="send('Hospital in Jaipur')"><span class="qi">🏥</span><span data-key="hospital">Find hospital</span></button>
+      <button class="qa-btn" onclick="send('Schemes')"><span class="qi">💳</span><span data-key="schemes">Free govt schemes</span></button>
+    </div>
+
+    <div>
+      <div class="sec-lbl" id="lbl-em">Emergency Helplines</div>
+      <div class="em-box">
+        <h4>📞 <span data-key="callnow">Call Now · All Free</span></h4>
+        <div class="em-row"><span>Ambulance</span><a href="tel:108">108</a></div>
+        <div class="em-row"><span>Police</span><a href="tel:112">112</a></div>
+        <div class="em-row"><span>Health</span><a href="tel:104">104</a></div>
+        <div class="em-row"><span>Women</span><a href="tel:1091">1091</a></div>
+        <div class="em-row"><span>Child</span><a href="tel:1098">1098</a></div>
+        <div class="em-row"><span>PMJAY</span><a href="tel:14555">14555</a></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="sec-lbl">Free Schemes</div>
+      <div class="pill-wrap">
+        <span class="spill" onclick="send('Ayushman Bharat')">PMJAY</span>
+        <span class="spill" onclick="send('JSY')">JSY</span>
+        <span class="spill" onclick="send('JSSK')">JSSK</span>
+        <span class="spill" onclick="send('DOTS')">TB DOTS</span>
+        <span class="spill" onclick="send('RBSK')">RBSK</span>
+        <span class="spill" onclick="send('PMMVY')">PMMVY</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- CHAT -->
+  <div class="chat-col">
+    <div class="chat-feed" id="chatFeed">
+      <div class="welcome">
+        <div class="welcome-top">
+          <div class="w-av">🌿</div>
+          <div>
+            <h2 id="welcomeTitle">Hello! I'm <em>Aarogya Mitra</em></h2>
+            <div class="welcome-sub" id="welcomeSub">Your free health companion · Available 24 hours a day</div>
+          </div>
+        </div>
+        <p id="welcomeDesc">I help with first-aid guidance, nearby hospitals, government health schemes, emergency helplines, and now Ayurvedic home remedies for your condition. Ask me anything.</p>
+        <div class="chips">
+          <div class="chip" onclick="send('I have fever')">🌡️ Fever</div>
+          <div class="chip" onclick="send('Hospital in Agra')">🏥 Hospital</div>
+          <div class="chip" onclick="send('Ayushman Bharat')">💳 Schemes</div>
+          <div class="chip" onclick="send('Snake bite')">🐍 Snake bite</div>
+          <div class="chip" onclick="send('Dengue')">🩸 Dengue</div>
+          <div class="chip" onclick="send('Diabetes')">🩺 Diabetes</div>
+          <div class="chip" onclick="send('TB symptoms')">💊 TB</div>
+          <div class="chip" onclick="send('Mental health')">🧠 Mental health</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-box">
+        <textarea id="userInput" rows="1" placeholder="Ask anything… e.g. 'I have fever' or 'Hospital in Lucknow'"></textarea>
+        <button class="icon-btn" id="micBtn" onclick="toggleVoice()" title="Voice Input">🎤</button>
+        <button class="icon-btn" id="ttsBtn" onclick="toggleTTS()" title="Text to Speech">🔊</button>
+        <button class="send-btn" onclick="go()">➤</button>
+      </div>
+      <div class="hint" id="inputHint">Enter to send · 🎤 voice · 🔊 speak replies · 🌿 remedies auto-suggested</div>
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <aside class="sidebar-r">
+    <div class="r-tabs">
+      <div class="r-tab on"  onclick="rtab('rem')">🌿 Remedies</div>
+      <div class="r-tab"     onclick="rtab('fit')">🏃 Fitness</div>
+      <div class="r-tab"     onclick="rtab('bmi')">⚖️ BMI</div>
+      <div class="r-tab"     onclick="rtab('map')">🗺️ Map</div>
+      <div class="r-tab"     onclick="rtab('sch')">💳 Schemes</div>
+      <div class="r-tab"     onclick="rtab('wa')">📱 WhatsApp</div>
+    </div>
+
+    <div class="r-body">
+
+      <!-- REMEDIES PANE -->
+      <div class="pane on" id="p-rem">
+        <div class="r-lbl">Ayurvedic & Home Remedies</div>
+        <div id="remDisGrid" class="remedy-dis-grid">
+          <div class="rdis-card sel" onclick="loadRemedy('fever',this)"><div class="rdis-icon">🌡️</div><div class="rdis-lbl">Fever</div></div>
+          <div class="rdis-card" onclick="loadRemedy('cough',this)"><div class="rdis-icon">😮‍💨</div><div class="rdis-lbl">Cough</div></div>
+          <div class="rdis-card" onclick="loadRemedy('diabetes',this)"><div class="rdis-icon">🩺</div><div class="rdis-lbl">Diabetes</div></div>
+          <div class="rdis-card" onclick="loadRemedy('hypertension',this)"><div class="rdis-icon">💔</div><div class="rdis-lbl">High BP</div></div>
+          <div class="rdis-card" onclick="loadRemedy('malaria',this)"><div class="rdis-icon">🦟</div><div class="rdis-lbl">Malaria</div></div>
+          <div class="rdis-card" onclick="loadRemedy('dengue',this)"><div class="rdis-icon">🩸</div><div class="rdis-lbl">Dengue</div></div>
+          <div class="rdis-card" onclick="loadRemedy('tuberculosis',this)"><div class="rdis-icon">🫁</div><div class="rdis-lbl">TB</div></div>
+          <div class="rdis-card" onclick="loadRemedy('diarrhoea',this)"><div class="rdis-icon">🤢</div><div class="rdis-lbl">Diarrhoea</div></div>
+          <div class="rdis-card" onclick="loadRemedy('typhoid',this)"><div class="rdis-icon">🌡️</div><div class="rdis-lbl">Typhoid</div></div>
+          <div class="rdis-card" onclick="loadRemedy('asthma',this)"><div class="rdis-icon">💨</div><div class="rdis-lbl">Asthma</div></div>
+          <div class="rdis-card" onclick="loadRemedy('anaemia',this)"><div class="rdis-icon">🩸</div><div class="rdis-lbl">Anaemia</div></div>
+          <div class="rdis-card" onclick="loadRemedy('jaundice',this)"><div class="rdis-icon">🟡</div><div class="rdis-lbl">Jaundice</div></div>
+          <div class="rdis-card" onclick="loadRemedy('headache',this)"><div class="rdis-icon">🤕</div><div class="rdis-lbl">Headache</div></div>
+          <div class="rdis-card" onclick="loadRemedy('skin',this)"><div class="rdis-icon">🫀</div><div class="rdis-lbl">Skin</div></div>
+        </div>
+        <div id="remedyContent" class="remedy-content"></div>
+      </div>
+
+      <!-- FITNESS PANE -->
+      <div class="pane" id="p-fit">
+        <div class="r-lbl">Daily Fitness Guide</div>
+        <div id="fitCatGrid" class="fit-cat-grid">
+          <div class="fit-cat" onclick="loadFitness('morning',this)"><div class="fc-icon">🌅</div><div class="fc-lbl">Morning</div><div class="fc-dur">30-45 min</div></div>
+          <div class="fit-cat" onclick="loadFitness('strength',this)"><div class="fc-icon">💪</div><div class="fc-lbl">Strength</div><div class="fc-dur">30-40 min</div></div>
+          <div class="fit-cat" onclick="loadFitness('yoga',this)"><div class="fc-icon">🧘</div><div class="fc-lbl">Yoga</div><div class="fc-dur">20-30 min</div></div>
+          <div class="fit-cat" onclick="loadFitness('water',this)"><div class="fc-icon">💧</div><div class="fc-lbl">Water</div><div class="fc-dur">All day</div></div>
+          <div class="fit-cat" onclick="loadFitness('diet',this)"><div class="fc-icon">🥗</div><div class="fc-lbl">Diet</div><div class="fc-dur">Daily</div></div>
+          <div class="fit-cat" onclick="loadFitness('sleep',this)"><div class="fc-icon">😴</div><div class="fc-lbl">Sleep</div><div class="fc-dur">7-8 hrs</div></div>
+        </div>
+        <div id="fitContent" class="fit-content"></div>
+      </div>
+
+      <!-- BMI PANE -->
+      <div class="pane" id="p-bmi">
+        <div class="r-lbl">BMI Calculator</div>
+        <div class="field-label">Weight (kg)</div>
+        <input class="field-input" type="number" id="bw" placeholder="e.g. 65"/>
+        <div class="field-label">Height (cm)</div>
+        <input class="field-input" type="number" id="bh" placeholder="e.g. 165"/>
+        <button class="action-btn" onclick="calcBMI()">Calculate BMI</button>
+        <div id="bmiOut" style="display:none"></div>
+      </div>
+
+      <!-- MAP PANE -->
+      <div class="pane" id="p-map">
+        <div class="r-lbl">Hospital Finder</div>
+        <input class="map-input" id="mapQ" placeholder="Enter district e.g. Jaipur"/>
+        <button class="action-btn" style="margin-bottom:8px" onclick="searchMap()">Find Hospitals</button>
+        <div id="mapDiv"></div>
+        <div id="facList" style="margin-top:6px"></div>
+      </div>
+
+      <!-- SCHEMES PANE -->
+      <div class="pane" id="p-sch">
+        <div class="r-lbl">Government Schemes</div>
+        <div id="schList"><div style="font-size:12px;color:var(--text2)">Loading...</div></div>
+      </div>
+
+      <!-- WHATSAPP PANE -->
+      <div class="pane" id="p-wa">
+        <div class="r-lbl">WhatsApp Deployment</div>
+        <div class="wa-box">
+          <h4>📱 Connect on WhatsApp</h4>
+          <div class="wa-step"><div class="wa-n">1</div><p>Sign up free at <strong>twilio.com</strong></p></div>
+          <div class="wa-step"><div class="wa-n">2</div><p>Enable WhatsApp Sandbox in Twilio console</p></div>
+          <div class="wa-step"><div class="wa-n">3</div><p>Install ngrok and run:</p></div>
+          <div class="code-box">ngrok http 5000</div>
+          <div class="wa-step"><div class="wa-n">4</div><p>Set webhook in Twilio:</p></div>
+          <div class="code-box">https://YOUR_URL/whatsapp</div>
+          <div class="wa-step"><div class="wa-n">5</div><p>Install twilio: <code>pip install twilio</code></p></div>
+          <div class="wa-step"><div class="wa-n">6</div><p>Users can chat with Aarogya Mitra on WhatsApp!</p></div>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+</div>
+
+<!-- Scheme modal -->
+<div class="overlay" id="schModal">
+  <div class="modal">
+    <h3 id="smTitle"></h3>
+    <div class="modal-body" id="smBody"></div>
+    <button class="modal-close-btn" onclick="document.getElementById('schModal').classList.remove('open')">Close</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+// THEME — DARK / LIGHT MODE
+// ════════════════════════════════════════════════════════════
+let isDark = localStorage.getItem('amTheme') === 'dark';
+
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+  document.getElementById('themeToggle').textContent = isDark ? '☀️' : '🌙';
+  document.getElementById('themeToggle').title = isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+  localStorage.setItem('amTheme', isDark ? 'dark' : 'light');
+}
+
+function toggleTheme() {
+  isDark = !isDark;
+  applyTheme();
+}
+
+applyTheme();
+
+// ════════════════════════════════════════════════════════════
+// LANGUAGE SUPPORT
+// ════════════════════════════════════════════════════════════
+const LANG = {
+  en: {
+    brandTag:"Rural Health Access Navigator", statusLbl:"Online 24/7",
+    welcomeTitle:"Hello! I'm Aarogya Mitra", welcomeSub:"Your free health companion · Available 24 hours a day",
+    welcomeDesc:"I help with first-aid guidance, nearby hospitals, government health schemes, emergency helplines, and Ayurvedic home remedies. Ask me anything.",
+    inputHint:"Enter to send · 🎤 voice · 🔊 speak replies · 🌿 remedies auto-suggested",
+    "lbl-quick":"Quick Actions","lbl-em":"Emergency Helplines",
+    help:"What can you do?",fever:"I have fever",malaria:"Malaria symptoms",dengue:"Dengue symptoms",
+    tb:"TB symptoms",snake:"Snake bite",heart:"Heart attack",pregnancy:"Pregnancy help",
+    mental:"Mental health",hospital:"Find hospital",schemes:"Free govt schemes",callnow:"Call Now · All Free",
+  },
+  hi: {
+    brandTag:"ग्रामीण स्वास्थ्य नेविगेटर", statusLbl:"24/7 ऑनलाइन",
+    welcomeTitle:"नमस्ते! मैं आरोग्य मित्र हूँ", welcomeSub:"आपका मुफ्त स्वास्थ्य सहायक · 24 घंटे उपलब्ध",
+    welcomeDesc:"मैं प्राथमिक चिकित्सा, अस्पताल, सरकारी योजनाएं, आयुर्वेदिक घरेलू उपाय और आपातकालीन नंबरों में मदद करता हूँ।",
+    inputHint:"Enter दबाएं · 🎤 आवाज़ से पूछें · 🔊 उत्तर सुनें",
+    "lbl-quick":"त्वरित कार्य","lbl-em":"आपातकालीन हेल्पलाइन",
+    help:"आप क्या कर सकते हैं?",fever:"मुझे बुखार है",malaria:"मलेरिया लक्षण",dengue:"डेंगू लक्षण",
+    tb:"TB लक्षण",snake:"सांप का काटना",heart:"दिल का दौरा",pregnancy:"गर्भावस्था सहायता",
+    mental:"मानसिक स्वास्थ्य",hospital:"अस्पताल खोजें",schemes:"मुफ्त योजनाएं",callnow:"अभी कॉल करें · सभी मुफ्त",
+  },
+  bn: {
+    brandTag:"গ্রামীণ স্বাস্থ্য নেভিগেটর", statusLbl:"২৪/৭ অনলাইন",
+    welcomeTitle:"নমস্কার! আমি আরোগ্য মিত্র", welcomeSub:"আপনার বিনামূল্যে স্বাস্থ্য সঙ্গী · ২৪ ঘন্টা উপলব্ধ",
+    welcomeDesc:"আমি প্রাথমিক চিকিৎসা, হাসপাতাল খোঁজা, সরকারি স্বাস্থ্য প্রকল্প এবং আয়ুর্বেদিক ঘরোয়া প্রতিকারে সাহায্য করি।",
+    inputHint:"Enter চাপুন পাঠাতে · 🎤 ভয়েস ইনপুট",
+    "lbl-quick":"দ্রুত কাজ","lbl-em":"জরুরি হেল্পলাইন",
+    help:"আপনি কী করতে পারেন?",fever:"আমার জ্বর আছে",malaria:"ম্যালেরিয়া লক্ষণ",dengue:"ডেঙ্গু লক্ষণ",
+    tb:"TB লক্ষণ",snake:"সাপের কামড়",heart:"হার্ট অ্যাটাক",pregnancy:"গর্ভাবস্থা সাহায্য",
+    mental:"মানসিক স্বাস্থ্য",hospital:"হাসপাতাল খুঁজুন",schemes:"বিনামূল্যে প্রকল্প",callnow:"এখনই কল করুন",
+  },
+  ta: {
+    brandTag:"கிராமப்புற சுகாதார நேவிகேட்டர்", statusLbl:"24/7 ஆன்லைன்",
+    welcomeTitle:"வணக்கம்! நான் ஆரோக்கிய மித்ரா", welcomeSub:"உங்கள் இலவச சுகாதார துணை · 24 மணி நேரமும்",
+    welcomeDesc:"நான் முதலுதவி, மருத்துவமனை தேடல், அரசு சுகாதார திட்டங்கள் மற்றும் ஆயுர்வேத வீட்டு வைத்தியங்களில் உதவுகிறேன்.",
+    inputHint:"அனுப்ப Enter அழுத்தவும் · 🎤 குரல் உள்ளீடு",
+    "lbl-quick":"விரைவு செயல்கள்","lbl-em":"அவசர உதவி எண்கள்",
+    help:"நீங்கள் என்ன செய்யலாம்?",fever:"எனக்கு காய்ச்சல்",malaria:"மலேரியா அறிகுறிகள்",dengue:"டெங்கு அறிகுறிகள்",
+    tb:"TB அறிகுறிகள்",snake:"பாம்பு கடி",heart:"மாரடைப்பு",pregnancy:"கர்ப்பகால உதவி",
+    mental:"மனநல ஆரோக்கியம்",hospital:"மருத்துவமனை தேடு",schemes:"இலவச திட்டங்கள்",callnow:"இப்போது அழையுங்கள்",
+  },
+  te: {
+    brandTag:"గ్రామీణ ఆరోగ్య నావిగేటర్", statusLbl:"24/7 ఆన్లైన్",
+    welcomeTitle:"నమస్కారం! నేను ఆరోగ్య మిత్ర", welcomeSub:"మీ ఉచిత ఆరోగ్య సహాయకుడు · 24 గంటలు అందుబాటులో",
+    welcomeDesc:"నేను ప్రాథమిక చికిత్స, ఆసుపత్రి శోధన, ప్రభుత్వ ఆరోగ్య పథకాలు మరియు ఆయుర్వేద ఇంటి చికిత్సలలో సహాయపడతాను.",
+    inputHint:"పంపడానికి Enter నొక్కండి · 🎤 వాయిస్ ఇన్పుట్",
+    "lbl-quick":"త్వరిత చర్యలు","lbl-em":"అత్యవసర హెల్ప్లైన్లు",
+    help:"మీరు ఏమి చేయగలరు?",fever:"నాకు జ్వరం ఉంది",malaria:"మలేరియా లక్షణాలు",dengue:"డెంగ్యూ లక్షణాలు",
+    tb:"TB లక్షణాలు",snake:"పాము కాటు",heart:"గుండె పోటు",pregnancy:"గర్భావస్థ సహాయం",
+    mental:"మానసిక ఆరోగ్యం",hospital:"ఆసుపత్రి వెతకండి",schemes:"ఉచిత పథకాలు",callnow:"ఇప్పుడే కాల్ చేయండి",
+  }
+};
+
+let currentLang = localStorage.getItem('amLang') || 'en';
+
+function setLang(lang) {
+  currentLang = lang;
+  localStorage.setItem('amLang', lang);
+  const t = LANG[lang] || LANG.en;
+
+  // Update simple text elements by ID
+  const simpleIds = ['brandTag','statusLbl','welcomeSub','welcomeDesc','inputHint','lbl-quick','lbl-em'];
+  simpleIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && t[id]) el.textContent = t[id];
+  });
+
+  // Update welcomeTitle h2 specially — keep the em tag
+  if (t['welcomeTitle']) {
+    const el = document.getElementById('welcomeTitle');
+    if (el) {
+      // Extract just the name part after "I'm " or equivalent
+      const raw = t['welcomeTitle'];
+      // Wrap "Aarogya Mitra" and translations in em
+      const names = ['Aarogya Mitra','আরোগ্য মিত্র','ஆரோக்கிய மித்ரா','ఆరోగ్య మిత్ర','आरोग्य मित्र'];
+      let html = raw;
+      names.forEach(n => { html = html.replace(n, `<em>${n}</em>`); });
+      el.innerHTML = html;
+    }
+  }
+
+  // Update data-key spans in sidebar
+  document.querySelectorAll('[data-key]').forEach(el => {
+    const k = el.getAttribute('data-key');
+    if (t[k]) el.textContent = t[k];
+  });
+
+  // Update input placeholder
+  const placeholders = {
+    en:"Ask anything… e.g. 'I have fever' or 'Hospital in Lucknow'",
+    hi:"कुछ भी पूछें… जैसे 'मुझे बुखार है' या 'जयपुर में अस्पताल'",
+    bn:"যেকোনো কিছু জিজ্ঞেস করুন… যেমন 'আমার জ্বর আছে'",
+    ta:"எதையும் கேளுங்கள்… உதாரணம் 'எனக்கு காய்ச்சல்'",
+    te:"ఏదైనా అడగండి… ఉదాహరణ 'నాకు జ్వరం ఉంది'",
+  };
+  document.getElementById('userInput').placeholder = placeholders[lang] || placeholders.en;
+
+  // Update voice recognition lang if active
+  if (recognition) {
+    const langMap = {en:'en-IN',hi:'hi-IN',bn:'bn-IN',ta:'ta-IN',te:'te-IN'};
+    recognition.lang = langMap[lang] || 'en-IN';
+  }
+}
+
+// Applied inside window.onload below
+
+// ════════════════════════════════════════════════════════════
+// TTS + VOICE
+// ════════════════════════════════════════════════════════════
+let ttsOn = false, recognizing = false, recognition = null;
+
+function toggleTTS() {
+  ttsOn = !ttsOn;
+  document.getElementById('ttsBtn').classList.toggle('active', ttsOn);
+  if (!ttsOn) speechSynthesis.cancel();
+}
+
+function speak(text) {
+  if (!ttsOn || !window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const clean = text.replace(/[^\x00-\x7F]/g, ' ').replace(/\s+/g,' ');
+  const u = new SpeechSynthesisUtterance(clean);
+  const langMap = {en:'en-IN',hi:'hi-IN',bn:'bn-IN',ta:'ta-IN',te:'te-IN'};
+  u.lang = langMap[currentLang] || 'en-IN';
+  u.rate = 0.88;
+  const voices = speechSynthesis.getVoices();
+  const v = voices.find(v => v.lang === u.lang) || voices.find(v => v.lang.startsWith('en'));
+  if (v) u.voice = v;
+  speechSynthesis.speak(u);
+}
+
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert('Voice input not supported. Please use Chrome browser.'); return;
+  }
+  if (recognizing) { recognition.stop(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  const langMap = {en:'en-IN',hi:'hi-IN',bn:'bn-IN',ta:'ta-IN',te:'te-IN'};
+  recognition.lang = langMap[currentLang] || 'en-IN';
+  recognition.interimResults = false;
+  recognition.onstart = () => { recognizing = true; document.getElementById('micBtn').classList.add('rec'); };
+  recognition.onresult = (e) => { document.getElementById('userInput').value = e.results[0][0].transcript; };
+  recognition.onend = () => { recognizing = false; document.getElementById('micBtn').classList.remove('rec'); };
+  recognition.onerror = () => { recognizing = false; document.getElementById('micBtn').classList.remove('rec'); };
+  recognition.start();
+}
+
+// ════════════════════════════════════════════════════════════
+// CHAT ENGINE
+// ════════════════════════════════════════════════════════════
+const feed = document.getElementById('chatFeed');
+const inp  = document.getElementById('userInput');
+
+inp.addEventListener('input', () => { inp.style.height='auto'; inp.style.height=Math.min(inp.scrollHeight,90)+'px'; });
+inp.addEventListener('keydown', e => { if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); go(); } });
+
+function scrollEnd() { feed.scrollTop = feed.scrollHeight; }
+
+function addMsg(text, who, extra) {
+  const row = document.createElement('div');
+  row.className = `msg-row ${who}`;
+  const isBot = who === 'bot';
+  let html = fmt(text);
+
+  if (extra && extra.ml) {
+    html += `<div style="margin-top:8px;padding:9px 11px;background:var(--teal-lt);border:1px solid rgba(14,133,133,.25);border-radius:8px;font-size:11.5px;color:var(--text2)">
+      <strong style="color:var(--teal);display:block;margin-bottom:3px">🤖 AI: ${extra.ml.disease}</strong>
+      Confidence: ${extra.ml.confidence}% · Severity: ${extra.ml.severity}
+    </div>`;
+  }
+
+  // Remedy suggestion button — use data-disease attribute to avoid innerHTML script injection issues
+  if (isBot && extra && extra.remedy_available && extra.remedy_disease) {
+    const dis = extra.remedy_disease;
+    const label = dis.charAt(0).toUpperCase() + dis.slice(1);
+    html += `<button class="remedy-btn" data-disease="${dis}">🌿 See Ayurvedic &amp; Home Remedies for ${label}</button>`;
+  }
+
+  row.innerHTML = `
+    <div class="av ${isBot?'av-bot':'av-user'}">${isBot?'🌿':'👤'}</div>
+    <div class="bubble ${isBot?'b-bot':'b-user'}">${html}</div>`;
+  feed.appendChild(row);
+  scrollEnd();
+  if (isBot) speak(text);
+}
+
+function fmt(t) {
+  let s = t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  s = s.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+  s = s.replace(/(\b10[248]\b|\b112\b|\b1091\b|\b1098\b|\b14555\b|\b\d{10}\b)/g,'<strong style="color:var(--green)">$1</strong>');
+  s = s.replace(/Severity: CRITICAL/gi,'Severity: <span class="sev sev-c">⚠ CRITICAL</span>');
+  s = s.replace(/Severity: HIGH/gi,    'Severity: <span class="sev sev-h">HIGH</span>');
+  s = s.replace(/Severity: MEDIUM/gi,  'Severity: <span class="sev sev-m">MEDIUM</span>');
+  return s;
+}
+
+function showTyping() {
+  const r=document.createElement('div'); r.className='typing-row'; r.id='typing';
+  r.innerHTML=`<div class="av av-bot">🌿</div><div class="typing-bub"><div class="td"></div><div class="td"></div><div class="td"></div></div>`;
+  feed.appendChild(r); scrollEnd();
+}
+function hideTyping() { const t=document.getElementById('typing'); if(t) t.remove(); }
+
+async function send(text) {
+  if (!text || !text.trim()) return;
+  inp.value=''; inp.style.height='auto';
+  addMsg(text, 'user');
+  showTyping();
+  try {
+    const r = await fetch('/chat', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({message:text})});
+    const d = await r.json();
+    hideTyping();
+    addMsg(d.reply, 'bot', d);
+    if (d.type==='facilities' && d.facilities && d.facilities.length) updateMap(d.facilities);
+  } catch(e) {
+    hideTyping();
+    addMsg('Connection error. Please make sure the app is running and try again.', 'bot');
+  }
+}
+
+function go() { send(inp.value.trim()); }
+
+// ════════════════════════════════════════════════════════════
+// RIGHT PANEL TABS
+// ════════════════════════════════════════════════════════════
+function rtab(name) {
+  const names = ['rem','fit','bmi','map','sch','wa'];
+  document.querySelectorAll('.r-tab').forEach((t,i) => t.classList.toggle('on', names[i]===name));
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+  document.getElementById(`p-${name}`).classList.add('on');
+  // Map needs the div to be visible before init — use timeout
+  if (name === 'map' && !window.mapReady) {
+    setTimeout(() => { initMap(); }, 100);
+  }
+  if (name === 'sch') loadSchemes();
+}
+
+function openFitnessPanel() {
+  // Show the right sidebar if on mobile it's hidden
+  const sidebarR = document.querySelector('.sidebar-r');
+  if (sidebarR) sidebarR.style.display = 'flex';
+  rtab('fit');
+}
+
+// ════════════════════════════════════════════════════════════
+// REMEDIES
+// ════════════════════════════════════════════════════════════
+async function loadRemedy(disease, cardEl) {
+  document.querySelectorAll('.rdis-card').forEach(c => c.classList.remove('sel'));
+  if (cardEl) cardEl.classList.add('sel');
+
+  // Hide the grid, show the content area
+  document.getElementById('remDisGrid').style.display = 'none';
+  const content = document.getElementById('remedyContent');
+  content.innerHTML = '<div style="font-size:12px;color:var(--text2);padding:10px 0">🔍 Loading remedies...</div>';
+  content.classList.add('on');
+
+  try {
+    const r = await fetch(`/api/remedies/${disease}`);
+    const d = await r.json();
+    if (!d.found) {
+      content.innerHTML = '<div style="font-size:12px;color:var(--text2)">No remedies found for this disease.</div>';
+      return;
+    }
+    const data = d.data;
+    content.innerHTML = `
+      <button class="rem-back" onclick="closeRemedyContent()">← Back to All Diseases</button>
+      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px">${data.title}</div>
+      <div class="rem-section">
+        <div class="rem-sec-title ayur">🌿 Ayurvedic Remedies</div>
+        ${data.ayurvedic.map(r => `<div class="rem-item">${r}</div>`).join('')}
+      </div>
+      <div class="rem-section">
+        <div class="rem-sec-title home">🏠 Home Remedies</div>
+        ${data.home.map(r => `<div class="rem-item">${r}</div>`).join('')}
+      </div>
+      <div class="rem-warning">${data.warning}</div>
+    `;
+    document.querySelector('.r-body').scrollTop = 0;
+  } catch(e) {
+    content.innerHTML = '<div style="font-size:12px;color:var(--red)">Error loading remedies. Please try again.</div>';
+  }
+}
+
+function closeRemedyContent() {
+  // Hide only the detail content, keep the disease grid visible
+  const c = document.getElementById('remedyContent');
+  c.classList.remove('on');
+  c.innerHTML = '';
+  // Re-show grid
+  document.getElementById('remDisGrid').style.display = 'grid';
+  document.querySelectorAll('.rdis-card').forEach(c => c.classList.remove('sel'));
+}
+
+function showRemedyFromChat(disease) {
+  rtab('rem');
+  // Small delay so pane is visible before loading
+  setTimeout(() => {
+    const diseaseOrder = ['fever','cough','diabetes','hypertension','malaria','dengue','tuberculosis','diarrhoea','typhoid','asthma','anaemia','jaundice','headache','skin'];
+    const cards = document.querySelectorAll('.rdis-card');
+    const idx = diseaseOrder.indexOf(disease);
+    const cardEl = (idx >= 0 && cards[idx]) ? cards[idx] : null;
+    loadRemedy(disease, cardEl);
+  }, 80);
+}
+
+// ════════════════════════════════════════════════════════════
+// FITNESS
+// ════════════════════════════════════════════════════════════
+async function loadFitness(category, cardEl) {
+  document.querySelectorAll('.fit-cat').forEach(c => c.classList.remove('sel'));
+  if (cardEl) cardEl.classList.add('sel');
+
+  // Hide the grid, show content area
+  document.getElementById('fitCatGrid').style.display = 'none';
+  const content = document.getElementById('fitContent');
+  content.innerHTML = '<div style="font-size:12px;color:var(--text2);padding:10px 0">🔍 Loading...</div>';
+  content.classList.add('on');
+
+  try {
+    const r = await fetch(`/api/fitness/${category}`);
+    const d = await r.json();
+    if (!d.found) { content.innerHTML = '<div style="font-size:12px;color:var(--text2)">Not found.</div>'; return; }
+    const data = d.data;
+
+    let html = `<button class="fit-back" onclick="closeFitnessContent()">← All Categories</button>
+      <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:8px">${data.icon || ''} ${data.title}</div>`;
+
+    if (category === 'morning' || category === 'strength' || category === 'yoga') {
+      html += `<div class="fit-water-tip">💧 ${data.water}</div>`;
+      html += `<div style="font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px">Exercises</div>`;
+      data.exercises.forEach(ex => {
+        html += `<div class="ex-card">
+          <div class="ex-top"><span class="ex-icon">${ex.icon}</span><div><div class="ex-name">${ex.name}</div><div class="ex-reps">${ex.reps}</div></div></div>
+          <div class="ex-benefit">${ex.benefit}</div>
+        </div>`;
+      });
+      html += `<div class="fit-tip-box">💡 ${data.tip}</div>`;
+    }
+
+    else if (category === 'water') {
+      html += `<div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:10px">Daily target: ${data.total}</div>`;
+      data.schedule.forEach(s => {
+        html += `<div class="water-row">
+          <div class="water-time">${s.time}</div>
+          <div class="water-amt">🥛 ${s.amount}</div>
+          <div class="water-benefit">${s.benefit}</div>
+        </div>`;
+      });
+      html += `<div style="margin-top:10px;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Tips</div>`;
+      data.tips.forEach(t => { html += `<div class="list-tip">${t}</div>`; });
+    }
+
+    else if (category === 'diet') {
+      data.meals.forEach(m => {
+        html += `<div class="diet-meal"><div class="diet-meal-name">${m.icon} ${m.meal}</div><div class="diet-meal-sug">${m.suggestion}</div></div>`;
+      });
+      html += `<div style="margin-top:10px;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px">Diet Rules</div>`;
+      data.tips.forEach(t => { html += `<div class="list-tip">${t}</div>`; });
+    }
+
+    else if (category === 'sleep') {
+      html += `<div class="fit-water-tip">⏰ ${data.duration}</div>`;
+      data.tips.forEach(tip => {
+        html += `<div class="sleep-tip">
+          <div class="sleep-tip-top"><span class="sleep-tip-icon">${tip.icon}</span><span class="sleep-tip-title">${tip.tip}</span></div>
+          <div class="sleep-tip-detail">${tip.detail}</div>
+        </div>`;
+      });
+    }
+
+    content.innerHTML = html;
+    document.querySelector('.r-body').scrollTop = 0;
+  } catch(e) {
+    content.innerHTML = '<div style="font-size:12px;color:var(--red)">Error loading fitness data.</div>';
+  }
+}
+
+function closeFitnessContent() {
+  const c = document.getElementById('fitContent');
+  c.classList.remove('on');
+  c.innerHTML = '';
+  document.getElementById('fitCatGrid').style.display = 'grid';
+  document.querySelectorAll('.fit-cat').forEach(c => c.classList.remove('sel'));
+}
+
+// ════════════════════════════════════════════════════════════
+// BMI
+// ════════════════════════════════════════════════════════════
+async function calcBMI() {
+  const w = parseFloat(document.getElementById('bw').value);
+  const h = parseFloat(document.getElementById('bh').value);
+  if (!w || !h || w<=0 || h<=0) { alert('Please enter valid weight and height.'); return; }
+  try {
+    const r = await fetch('/api/bmi', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({weight:w,height:h})});
+    const d = await r.json();
+    if (d.error) { alert(d.error); return; }
+    const cols = {green:'#1a8a50',orange:'#c47800',yellow:'#c47800',red:'#d42b2b'};
+    const col = cols[d.color] || '#1a8a50';
+    const pct = Math.min(100, Math.max(0, ((d.bmi-10)/35)*100));
+    const el = document.getElementById('bmiOut');
+    el.style.display='block';
+    el.innerHTML=`<div class="bmi-card">
+      <div class="bmi-num" style="color:${col}">${d.bmi}</div>
+      <div class="bmi-cat" style="color:${col}">${d.category}</div>
+      <div class="gauge"><div class="needle" style="left:${pct}%"></div></div>
+      <div class="gauge-labels"><span>Thin</span><span>Normal</span><span>Over</span><span>Obese</span></div>
+      <div class="bmi-ideal">Ideal: <strong style="color:var(--green)">${d.ideal_weight_min}–${d.ideal_weight_max} kg</strong></div>
+      <div class="bmi-advice-text">${d.advice}</div>
+    </div>`;
+  } catch { alert('BMI calculation failed.'); }
+}
+
+// ════════════════════════════════════════════════════════════
+// MAP
+// ════════════════════════════════════════════════════════════
+let map=null, mapMarkers=[];
+window.mapReady = false;
+
+function initMap() {
+  map = L.map('mapDiv').setView([22.5,82.5],4);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:18}).addTo(map);
+  window.mapReady = true;
+}
+
+async function searchMap() {
+  const q = document.getElementById('mapQ').value.trim();
+  if (!q) { alert('Enter a district name.'); return; }
+  if (!window.mapReady) initMap();
+  try {
+    const r = await fetch(`/api/facilities?district=${encodeURIComponent(q)}`);
+    const d = await r.json();
+    updateMap(d.facilities||[]);
+    send(`Hospital in ${q}`);
+  } catch { alert('Could not load facilities.'); }
+}
+
+function updateMap(facs) {
+  if (!window.mapReady) { rtab('map'); setTimeout(()=>updateMap(facs),400); return; }
+  mapMarkers.forEach(m=>map.removeLayer(m)); mapMarkers=[];
+  const list=document.getElementById('facList'); list.innerHTML='';
+  if (!facs||!facs.length) { list.innerHTML='<div style="font-size:12px;color:var(--text2)">No facilities found.</div>'; return; }
+  const bounds=[];
+  facs.forEach(f => {
+    const lat=f.lat||f.latitude, lng=f.lng||f.longitude;
+    if (!lat||!lng) return;
+    const em = f.emergency==='Yes'||f.emergency_available==='Yes';
+    const icon=L.divIcon({html:`<div style="width:10px;height:10px;border-radius:50%;background:${em?'#d42b2b':'#1a8a50'};border:2px solid white;box-shadow:0 0 4px rgba(0,0,0,.3)"></div>`,iconSize:[10,10],className:''});
+    const m=L.marker([lat,lng],{icon}).addTo(map).bindPopup(`<b>${f.name||f.facility_name}</b><br>${f.type||f.facility_type}<br>📞 ${f.phone}`);
+    mapMarkers.push(m); bounds.push([lat,lng]);
+    const card=document.createElement('div'); card.className='fac-card';
+    const emStr=em?'<span class="em-yes">✓ Emergency</span>':'<span class="em-no">OPD Only</span>';
+    card.innerHTML=`<div class="fac-type">${f.type||f.facility_type}</div><div class="fac-name">${f.name||f.facility_name}</div><div class="fac-meta">${f.address}  · 📞 ${f.phone}</div><div class="fac-em">${emStr}</div>`;
+    card.onclick=()=>m.openPopup(); list.appendChild(card);
+  });
+  if (bounds.length) map.fitBounds(bounds,{padding:[20,20]});
+}
+
+document.getElementById('mapQ').addEventListener('keydown', e => { if(e.key==='Enter') searchMap(); });
+
+// ════════════════════════════════════════════════════════════
+// SCHEMES
+// ════════════════════════════════════════════════════════════
+async function loadSchemes() {
+  const el=document.getElementById('schList');
+  if (el.dataset.loaded) return;
+  try {
+    const r=await fetch('/api/schemes');
+    const d=await r.json();
+    el.innerHTML='';
+    (d.schemes||[]).forEach(s => {
+      const item=document.createElement('div'); item.className='sc-item';
+      item.innerHTML=`<div class="sc-name">${s.scheme_name}</div><div class="sc-benefit">${s.benefit}</div><div class="sc-how">📋 ${s.how_to_apply.slice(0,50)}...</div>`;
+      item.onclick=()=>openSchemeModal(s);
+      el.appendChild(item);
+    });
+    el.dataset.loaded='1';
+  } catch { el.innerHTML='<div style="font-size:12px;color:var(--text2)">Could not load schemes.</div>'; }
+}
+
+function openSchemeModal(s) {
+  document.getElementById('smTitle').textContent=s.scheme_name;
+  document.getElementById('smBody').innerHTML=`<b>Eligibility:</b> ${s.eligibility}<br><br><b>Benefit:</b> ${s.benefit}<br><br><b>Where:</b> ${s.where_available}<br><br><b>How to Apply:</b> ${s.how_to_apply}<br><br><b>Website:</b> <a href="https://${s.website}" target="_blank">${s.website}</a>`;
+  document.getElementById('schModal').classList.add('open');
+}
+
+// ════════════════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════════════════
+window.onload = () => {
+  inp.focus();
+  speechSynthesis.getVoices();
+
+  // Apply saved language now that DOM is fully ready
+  document.getElementById('langSel').value = currentLang;
+  setLang(currentLang);
+
+  // Event delegation for remedy buttons generated inside chat bubbles
+  // These are created dynamically via innerHTML so we attach listener to the feed
+  feed.addEventListener('click', (e) => {
+    const btn = e.target.closest('.remedy-btn');
+    if (btn) {
+      const disease = btn.getAttribute('data-disease');
+      if (disease) showRemedyFromChat(disease);
+    }
+  });
+
+  // Load default remedy view (fever) on page load
+  loadRemedy('fever', document.querySelector('.rdis-card'));
+};
+</script>
+</body>
+</html>

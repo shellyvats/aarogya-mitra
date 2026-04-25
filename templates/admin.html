@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Aarogya Mitra — Admin Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+  --green:#2ea86a;--green2:#3fd68a;--teal:#1a9fa0;--teal2:#24c6c7;
+  --red:#f85149;--orange:#d29922;--text:#e6edf3;--text2:#8b949e;--text3:#484f58;
+}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 28px;height:60px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.logo{font-size:16px;font-weight:800;background:linear-gradient(135deg,var(--green2),var(--teal2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.back-btn{padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-block}
+.back-btn:hover{border-color:var(--green);color:var(--green2)}
+.dash{max-width:1200px;margin:0 auto;padding:28px}
+.dash-title{font-size:22px;font-weight:800;margin-bottom:6px}
+.dash-sub{font-size:13px;color:var(--text2);margin-bottom:28px}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;position:relative;overflow:hidden;transition:transform .2s}
+.stat-card:hover{transform:translateY(-3px)}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.green::before{background:linear-gradient(90deg,var(--green),var(--green2))}
+.stat-card.teal::before{background:linear-gradient(90deg,var(--teal),var(--teal2))}
+.stat-card.orange::before{background:linear-gradient(90deg,#c9a227,var(--orange))}
+.stat-card.red::before{background:linear-gradient(90deg,#c93b31,var(--red))}
+.stat-icon{font-size:28px;margin-bottom:10px}
+.stat-val{font-size:32px;font-weight:800;line-height:1}
+.stat-label{font-size:12px;color:var(--text2);margin-top:4px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px}
+.chart-title{font-size:14px;font-weight:700;margin-bottom:16px;color:var(--text)}
+.chart-wrap{position:relative;height:220px}
+.full-card{grid-column:1/-1}
+.recent-table{width:100%;border-collapse:collapse;font-size:12px}
+.recent-table th{text-align:left;padding:10px 14px;background:var(--surface2);color:var(--text2);font-size:10px;text-transform:uppercase;letter-spacing:.8px;font-weight:600;border-bottom:1px solid var(--border)}
+.recent-table td{padding:10px 14px;border-bottom:1px solid rgba(48,54,61,0.5);color:var(--text)}
+.recent-table tr:last-child td{border:none}
+.recent-table tr:hover td{background:rgba(46,168,106,0.04)}
+.time-tag{color:var(--text3);font-size:10px}
+.loading{color:var(--text2);font-size:13px;text-align:center;padding:40px}
+.refresh-btn{padding:8px 18px;border-radius:8px;background:linear-gradient(135deg,var(--green),var(--teal));border:none;color:white;font-family:'Poppins',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s}
+.refresh-btn:hover{opacity:.9}
+@media(max-width:800px){.stats-grid{grid-template-columns:1fr 1fr}.charts-grid{grid-template-columns:1fr}.full-card{grid-column:1}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🌿 Aarogya Mitra — Dashboard</div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <button class="refresh-btn" onclick="loadStats()">↻ Refresh</button>
+    <a class="back-btn" href="/">← Back to Chat</a>
+  </div>
+</header>
+
+<div class="dash">
+  <div class="dash-title">Analytics Dashboard</div>
+  <div class="dash-sub">Real-time insights from Aarogya Mitra conversations</div>
+
+  <div class="stats-grid">
+    <div class="stat-card green"><div class="stat-icon">💬</div><div class="stat-val" id="totalMsgs">—</div><div class="stat-label">Total Messages</div></div>
+    <div class="stat-card teal"><div class="stat-icon">📅</div><div class="stat-val" id="todayMsgs">—</div><div class="stat-label">Messages Today</div></div>
+    <div class="stat-card orange"><div class="stat-icon">🔍</div><div class="stat-val" id="topQuery">—</div><div class="stat-label">Top Query Today</div></div>
+    <div class="stat-card red"><div class="stat-icon">🚨</div><div class="stat-val">108</div><div class="stat-label">Emergency Number</div></div>
+  </div>
+
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">📊 Top Queries</div>
+      <div class="chart-wrap"><canvas id="queryChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">⏰ Hourly Activity</div>
+      <div class="chart-wrap"><canvas id="hourlyChart"></canvas></div>
+    </div>
+    <div class="chart-card full-card">
+      <div class="chart-title">💬 Recent Conversations</div>
+      <div id="recentTable"><div class="loading">Loading conversations...</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let queryChart=null, hourlyChart=null;
+
+async function loadStats(){
+  try{
+    const res=await fetch('/api/admin/stats');
+    const d=await res.json();
+    if(d.error){ document.querySelector('.dash-sub').textContent='Start chatting to see analytics here.'; return; }
+
+    document.getElementById('totalMsgs').textContent=d.total_messages||0;
+    document.getElementById('todayMsgs').textContent=d.today_messages||0;
+    document.getElementById('topQuery').textContent=d.top_queries&&d.top_queries[0]?d.top_queries[0].query.slice(0,12):'—';
+
+    // Query chart
+    const qLabels=(d.top_queries||[]).map(q=>q.query.slice(0,20));
+    const qData=(d.top_queries||[]).map(q=>q.count);
+    if(queryChart) queryChart.destroy();
+    queryChart=new Chart(document.getElementById('queryChart'),{
+      type:'bar',
+      data:{
+        labels:qLabels,
+        datasets:[{label:'Count',data:qData,
+          backgroundColor:'rgba(46,168,106,0.6)',
+          borderColor:'rgba(63,214,138,0.9)',
+          borderWidth:1,borderRadius:6}]
+      },
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{x:{ticks:{color:'#8b949e',font:{size:10}},grid:{color:'rgba(48,54,61,0.5)'}},
+                y:{ticks:{color:'#8b949e',font:{size:10}},grid:{color:'rgba(48,54,61,0.5)'}}}}
+    });
+
+    // Hourly chart
+    const hours=Array.from({length:24},(_,i)=>String(i).padStart(2,'0'));
+    const hourMap={};
+    (d.hourly_activity||[]).forEach(h=>{ hourMap[h.hour]=h.count; });
+    const hData=hours.map(h=>hourMap[h]||0);
+    if(hourlyChart) hourlyChart.destroy();
+    hourlyChart=new Chart(document.getElementById('hourlyChart'),{
+      type:'line',
+      data:{
+        labels:hours.map(h=>h+':00'),
+        datasets:[{label:'Messages',data:hData,
+          borderColor:'#24c6c7',backgroundColor:'rgba(26,159,160,0.1)',
+          tension:0.4,fill:true,pointRadius:3,pointBackgroundColor:'#24c6c7'}]
+      },
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+        scales:{x:{ticks:{color:'#8b949e',font:{size:9},maxTicksLimit:8},grid:{color:'rgba(48,54,61,0.5)'}},
+                y:{ticks:{color:'#8b949e',font:{size:10}},grid:{color:'rgba(48,54,61,0.5)'}}}}
+    });
+
+    // Recent table
+    const rows=(d.recent_chats||[]);
+    if(!rows.length){ document.getElementById('recentTable').innerHTML='<div class="loading">No conversations yet. Start chatting!</div>'; return; }
+    let html=`<table class="recent-table"><thead><tr><th>Time</th><th>User Message</th><th>Bot Reply</th></tr></thead><tbody>`;
+    rows.forEach(r=>{
+      html+=`<tr><td class="time-tag">${r.time}</td><td>${escHtml(r.user)}</td><td>${escHtml(r.bot)}...</td></tr>`;
+    });
+    html+='</tbody></table>';
+    document.getElementById('recentTable').innerHTML=html;
+
+  } catch(e){
+    document.querySelector('.dash-sub').textContent='Start chatting to see analytics. No data yet.';
+  }
+}
+
+function escHtml(t){ return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+loadStats();
+setInterval(loadStats,30000);
+</script>
+</body>
+</html>
