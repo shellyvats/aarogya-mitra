@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+  <!-- FEVER -->
+  <category>
+    <pattern>I HAVE FEVER</pattern>
+    <template>For Fever: Drink plenty of fluids, take paracetamol, and rest. If fever is above 38°C or lasts more than 3 days, visit your nearest PHC immediately.
+Severity: HIGH | Recommended: PHC
+Should I find the nearest health center for you? Type NEAREST HOSPITAL and your pincode.</template>
+  </category>
+  <category><pattern>I AM HAVING FEVER</pattern><template><srai>I HAVE FEVER</srai></template></category>
+  <category><pattern>MUJHE BUKHAR HAI</pattern><template><srai>I HAVE FEVER</srai></template></category>
+  <category><pattern>FEVER</pattern><template><srai>I HAVE FEVER</srai></template></category>
+  <category><pattern>MY CHILD HAS FEVER</pattern>
+    <template>For a child with fever: Do NOT give aspirin to children. Give paracetamol syrup in correct dose for weight. Keep the child hydrated with ORS or fluids. If fever is very high or child is not responding, go to PHC or CHC IMMEDIATELY.
+Severity: HIGH | Recommended: PHC
+Type NEAREST HOSPITAL for directions.</template>
+  </category>
+
+  <!-- MALARIA -->
+  <category>
+    <pattern>I HAVE MALARIA</pattern>
+    <template>For Malaria symptoms (fever with chills and sweating): You MUST visit a PHC for a blood test today. Do not self-medicate. Free anti-malarial treatment is available at all government PHCs.
+Severity: HIGH | Recommended: PHC — Same Day
+Call 104 for free health advice while you arrange transport.</template>
+  </category>
+  <category><pattern>MALARIA SYMPTOMS</pattern><template><srai>I HAVE MALARIA</srai></template></category>
+  <category><pattern>MALARIA</pattern><template><srai>I HAVE MALARIA</srai></template></category>
+
+  <!-- DENGUE -->
+  <category>
+    <pattern>DENGUE SYMPTOMS</pattern>
+    <template>For Dengue (high fever, severe headache, rash, joint pain): Do NOT take aspirin or ibuprofen — they can cause bleeding. Drink plenty of fluids. Visit PHC same day for platelet count test. Free testing available at government hospitals.
+Severity: HIGH | Recommended: PHC — Same Day
+Type EMERGENCY for helpline numbers.</template>
+  </category>
+  <category><pattern>DENGUE</pattern><template><srai>DENGUE SYMPTOMS</srai></template></category>
+
+  <!-- TUBERCULOSIS -->
+  <category>
+    <pattern>TB SYMPTOMS</pattern>
+    <template>For Tuberculosis (TB) — cough for more than 2 weeks, blood in sputum, weight loss, night sweats: Visit your nearest PHC today for a free sputum test. Free DOTS treatment is available at all government PHCs — full course provided at no cost.
+Severity: HIGH | Recommended: PHC — Same Day
+Type SCHEMES to learn about free TB treatment programs.</template>
+  </category>
+  <category><pattern>TUBERCULOSIS</pattern><template><srai>TB SYMPTOMS</srai></template></category>
+  <category><pattern>I HAVE COUGH FOR 2 WEEKS</pattern><template><srai>TB SYMPTOMS</srai></template></category>
+
+  <!-- DIARRHOEA -->
+  <category>
+    <pattern>I HAVE DIARRHOEA</pattern>
+    <template>For Diarrhoea: Prepare ORS solution immediately — 1 litre clean water + 6 teaspoons sugar + half teaspoon salt. Keep drinking every 5 minutes. Continue eating light food. Visit PHC if not improving in 2 days or if there is blood in stool.
+Severity: MEDIUM | Recommended: PHC in 1-2 days
+ORS packets are available free at all Anganwadi centres.</template>
+  </category>
+  <category><pattern>LOOSE MOTIONS</pattern><template><srai>I HAVE DIARRHOEA</srai></template></category>
+  <category><pattern>STOMACH PAIN AND LOOSE MOTIONS</pattern><template><srai>I HAVE DIARRHOEA</srai></template></category>
+
+  <!-- CHOLERA -->
+  <category>
+    <pattern>CHOLERA</pattern>
+    <template>EMERGENCY — Cholera: Severe watery diarrhoea and vomiting can cause fatal dehydration very quickly. Start ORS immediately and go to the nearest hospital or call 108 ambulance RIGHT NOW.
+Severity: CRITICAL | Recommended: District Hospital — IMMEDIATE
+Call 108 for ambulance NOW.</template>
+  </category>
+
+  <!-- SNAKE BITE -->
+  <category>
+    <pattern>SNAKE BITE</pattern>
+    <template>EMERGENCY — Snake Bite:
+1. Keep the person CALM and still — do NOT move the bitten limb
+2. Remove watches, rings near the bite
+3. Do NOT cut the wound, suck the venom, or apply tourniquet
+4. Go to District Hospital IMMEDIATELY for anti-venom
+Call 108 ambulance NOW — anti-venom is free at government hospitals.
+Severity: CRITICAL | Recommended: District Hospital — IMMEDIATE</template>
+  </category>
+  <category><pattern>I WAS BITTEN BY A SNAKE</pattern><template><srai>SNAKE BITE</srai></template></category>
+
+  <!-- DOG BITE -->
+  <category>
+    <pattern>DOG BITE</pattern>
+    <template>For Dog Bite:
+1. Wash the wound immediately with soap and running water for 10 minutes
+2. Do NOT close the wound with bandage tightly
+3. Visit PHC IMMEDIATELY for free anti-rabies vaccination
+Rabies is fatal if not treated — do not delay even if the dog seems healthy.
+Severity: CRITICAL | Recommended: PHC — IMMEDIATE
+Free anti-rabies vaccine available at all PHCs.</template>
+  </category>
+  <category><pattern>I WAS BITTEN BY A DOG</pattern><template><srai>DOG BITE</srai></template></category>
+
+  <!-- HEART ATTACK -->
+  <category>
+    <pattern>HEART ATTACK</pattern>
+    <template>EMERGENCY — Heart Attack (chest pain, left arm pain, sweating, breathlessness):
+1. Call 108 ambulance IMMEDIATELY
+2. Make the person sit or lie down in a comfortable position
+3. Loosen tight clothing
+4. If conscious and not allergic, give 1 aspirin tablet to chew
+Do NOT drive yourself — call 108 NOW.
+Severity: CRITICAL | Recommended: District Hospital — IMMEDIATE</template>
+  </category>
+  <category><pattern>CHEST PAIN</pattern><template><srai>HEART ATTACK</srai></template></category>
+
+  <!-- STROKE -->
+  <category>
+    <pattern>STROKE</pattern>
+    <template>EMERGENCY — Stroke (face drooping, arm weakness, speech difficulty):
+Remember FAST: Face drooping, Arm weakness, Speech difficulty, Time to call 108.
+1. Call 108 ambulance IMMEDIATELY
+2. Note the exact time symptoms started — very important for treatment
+3. Do NOT give food or water
+4. Keep person lying on their side
+Severity: CRITICAL | Recommended: District Hospital — IMMEDIATE</template>
+  </category>
+
+  <!-- PREGNANCY -->
+  <category>
+    <pattern>PREGNANCY COMPLICATIONS</pattern>
+    <template>EMERGENCY — Pregnancy complications (heavy bleeding, severe pain, unconsciousness):
+Call 108 ambulance IMMEDIATELY. Free delivery and emergency care is available at all government hospitals under JSSK scheme — no payment required.
+Severity: CRITICAL | Recommended: District Hospital — IMMEDIATE
+Type SCHEMES to learn about free maternity benefits (JSY, PMMVY).</template>
+  </category>
+  <category><pattern>DELIVERY PROBLEM</pattern><template><srai>PREGNANCY COMPLICATIONS</srai></template></category>
+
+  <!-- BURNS -->
+  <category>
+    <pattern>BURN</pattern>
+    <template>For Burns:
+1. Cool the burn with running cold water for at least 10 minutes
+2. Do NOT use ice, butter, oil, or toothpaste
+3. Cover loosely with a clean cloth
+4. For severe burns or burns on face/hands — go to hospital IMMEDIATELY
+Severity: CRITICAL for severe burns | Recommended: PHC for minor, Hospital for severe</template>
+  </category>
+  <category><pattern>BURNS</pattern><template><srai>BURN</srai></template></category>
+
+  <!-- GENERAL SYMPTOMS -->
+  <category>
+    <pattern>VOMITING</pattern>
+    <template>For Vomiting: Rest, sip small amounts of water or ORS frequently. Avoid solid food for a few hours. Visit PHC if vomiting persists more than 24 hours or is accompanied by high fever.
+Severity: MEDIUM | Recommended: PHC in 1-2 days</template>
+  </category>
+
+  <category>
+    <pattern>STOMACH PAIN</pattern>
+    <template>For Stomach Pain: Avoid spicy food. Drink warm water. If pain is severe, accompanied by fever or vomiting, or does not improve in 24 hours — visit your nearest PHC.
+Type NEAREST HOSPITAL to find the closest PHC.</template>
+  </category>
+
+  <category>
+    <pattern>CHILD IS SICK</pattern>
+    <template>For a sick child, please tell me the symptoms so I can give better advice. You can type:
+- MY CHILD HAS FEVER
+- CHILD HAS DIARRHOEA
+- CHILD IS NOT EATING
+Or type NEAREST HOSPITAL to find the closest PHC with child health services.</template>
+  </category>
+
+</aiml>

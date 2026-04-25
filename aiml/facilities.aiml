@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+  <!-- EMERGENCY NUMBERS -->
+  <category>
+    <pattern>EMERGENCY</pattern>
+    <template>Emergency Helpline Numbers:
+🚑 Ambulance: 108 (Free, 24x7 — All India)
+🚑 Ambulance (alternate): 102
+👮 Police: 112
+📞 Health Helpline: 104 (Free medical advice)
+👩 Women Helpline: 1091
+👶 Child Helpline: 1098
+🏥 Ayushman Bharat: 14555
+🧠 Mental Health: 9152987821 (iCall)
+☠️ Poison Control: 1800-116-117 (Toll-free)
+Call 108 for ANY medical emergency — it is FREE.</template>
+  </category>
+
+  <category>
+    <pattern>HELPLINE</pattern>
+    <template><srai>EMERGENCY</srai></template>
+  </category>
+
+  <category>
+    <pattern>HELPLINE NUMBERS</pattern>
+    <template><srai>EMERGENCY</srai></template>
+  </category>
+
+  <!-- AMBULANCE -->
+  <category>
+    <pattern>AMBULANCE</pattern>
+    <template>CALL 108 NOW for a free ambulance — available 24x7 across India.
+Alternate number: 102
+The ambulance service is completely FREE for all medical emergencies.
+Stay on the line and give your exact location and the patient's condition.</template>
+  </category>
+
+  <category>
+    <pattern>CALL AMBULANCE</pattern>
+    <template><srai>AMBULANCE</srai></template>
+  </category>
+
+  <category>
+    <pattern>I NEED AMBULANCE</pattern>
+    <template><srai>AMBULANCE</srai></template>
+  </category>
+
+  <!-- FIND HOSPITAL -->
+  <category>
+    <pattern>NEAREST HOSPITAL</pattern>
+    <template>To find the nearest hospital, please tell me your district or pincode.
+For example, type: HOSPITAL IN AGRA or HOSPITAL IN 282001
+I will find the nearest PHC, CHC, or District Hospital for you.</template>
+  </category>
+
+  <category>
+    <pattern>FIND HOSPITAL</pattern>
+    <template><srai>NEAREST HOSPITAL</srai></template>
+  </category>
+
+  <category>
+    <pattern>HOSPITAL NEAR ME</pattern>
+    <template><srai>NEAREST HOSPITAL</srai></template>
+  </category>
+
+  <category>
+    <pattern>NEAREST PHC</pattern>
+    <template>To find the nearest Primary Health Centre (PHC), type:
+HOSPITAL IN followed by your district name.
+Example: HOSPITAL IN VARANASI
+PHCs provide free basic healthcare, medicines, and maternal health services.</template>
+  </category>
+
+  <category>
+    <pattern>PRIMARY HEALTH CENTER</pattern>
+    <template><srai>NEAREST PHC</srai></template>
+  </category>
+
+  <!-- DISTRICT HOSPITAL LOOKUPS -->
+  <category>
+    <pattern>HOSPITAL IN AGRA</pattern>
+    <template>Health Facilities in Agra, Uttar Pradesh:
+1. PHC Fatehpur Sikri — Fatehpur Sikri Road | 05612-230011
+2. CHC Kiraoli — Kiraoli Block | 05612-231456 | Emergency: Yes
+3. District Hospital Agra — MG Road | 0562-2260011 | Emergency: Yes | 200 Beds
+For emergency, call 108 for free ambulance.</template>
+  </category>
+
+  <category>
+    <pattern>HOSPITAL IN LUCKNOW</pattern>
+    <template>Health Facilities in Lucknow, Uttar Pradesh:
+1. PHC Malihabad — Malihabad Block | 0522-2840011
+2. CHC Bakshi Ka Talab — BKT Block | 0522-2841200 | Emergency: Yes
+For emergency, call 108 for free ambulance.</template>
+  </category>
+
+  <category>
+    <pattern>HOSPITAL IN PATNA</pattern>
+    <template>Health Facilities in Patna, Bihar:
+1. PHC Phulwarisharif — Phulwari Block | 0612-2274011
+2. CHC Danapur — Danapur | 0612-2274500 | Emergency: Yes
+3. PMCH Patna — Ashok Rajpath | 0612-2300011 | Emergency: Yes | 1500 Beds
+For emergency, call 108 for free ambulance.</template>
+  </category>
+
+  <category>
+    <pattern>HOSPITAL IN JAIPUR</pattern>
+    <template>Health Facilities in Jaipur, Rajasthan:
+1. PHC Chomu — Chomu Block | 01423-220011
+2. CHC Shahpura — Shahpura Block | 01429-220100 | Emergency: Yes
+3. SMS Hospital Jaipur — JLN Marg | 0141-2518888 | Emergency: Yes | 2500 Beds
+Rajasthan residents can also use Chiranjeevi Swasthya Bima Yojana — free treatment up to ₹10 lakhs.
+For emergency, call 108 for free ambulance.</template>
+  </category>
+
+  <category>
+    <pattern>HOSPITAL IN BHOPAL</pattern>
+    <template>Health Facilities in Bhopal, Madhya Pradesh:
+1. PHC Berasia — Berasia Block | 0755-2710011
+2. CHC Huzur — Huzur Block | 0755-2711200 | Emergency: Yes
+3. Hamidia Hospital Bhopal — Royal Market | 0755-2540222 | Emergency: Yes | 1200 Beds
+For emergency, call 108 for free ambulance.</template>
+  </category>
+
+  <category>
+    <pattern>HOSPITAL IN PUNE</pattern>
+    <template>Health Facilities in Pune, Maharashtra:
+1. PHC Mulshi — Mulshi Block | 020-23390011
+2. CHC Maval — Maval Block | 02114-250100 | Emergency: Yes
+3. Sassoon Hospital Pune — Sassoon Road | 020-26128000 | Emergency: Yes | 1200 Beds
+For emergency, call 108 for free ambulance.</template>
+  </category>
+
+  <category>
+    <pattern>HOSPITAL IN CHENNAI</pattern>
+    <template>Health Facilities in Chennai, Tamil Nadu:
+1. PHC Sholinganallur — Sholinganallur | 044-24501100
+2. CHC Tambaram — Tambaram | 044-22261200 | Emergency: Yes
+3. Rajiv Gandhi Govt Hospital — Park Town | 044-25305000 | Emergency: Yes | 2600 Beds
+For emergency, call 108 for free ambulance.</template>
+  </category>
+
+  <category>
+    <pattern>HOSPITAL IN BENGALURU</pattern>
+    <template>Health Facilities in Bengaluru, Karnataka:
+1. PHC Anekal — Anekal Block | 080-27842011
+2. CHC Attibele — Attibele Block | 080-27843200 | Emergency: Yes
+3. Victoria Hospital Bengaluru — Kalasipalya | 080-26703600 | Emergency: Yes | 1600 Beds
+For emergency, call 108 for free ambulance.</template>
+  </category>
+
+  <!-- DELIVERY HOSPITAL -->
+  <category>
+    <pattern>DELIVERY HOSPITAL</pattern>
+    <template>For delivery, go to the nearest government PHC, CHC, or District Hospital.
+Under JSSK scheme, delivery is COMPLETELY FREE including:
+- Normal and C-section delivery
+- Medicines and food during stay
+- Free transport from home and back
+Type HOSPITAL IN followed by your district to find the nearest facility.
+For emergency delivery, call 108 immediately — ambulance is FREE.</template>
+  </category>
+
+  <!-- MENTAL HEALTH -->
+  <category>
+    <pattern>MENTAL HEALTH</pattern>
+    <template>Mental Health Support:
+📞 iCall Helpline: 9152987821 (Free counselling — Mon to Sat, 8am-10pm)
+🏥 Free treatment available at District Hospital psychiatry OPD under NMHP
+If someone is in crisis or danger — call 112 immediately.
+It is okay to ask for help. Mental health is as important as physical health.</template>
+  </category>
+
+  <category>
+    <pattern>DEPRESSION</pattern>
+    <template><srai>MENTAL HEALTH</srai></template>
+  </category>
+
+  <category>
+    <pattern>ANXIETY</pattern>
+    <template><srai>MENTAL HEALTH</srai></template>
+  </category>
+
+</aiml>

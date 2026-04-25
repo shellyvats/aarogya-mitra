@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+  <!-- General Schemes -->
+  <category>
+    <pattern>SCHEMES</pattern>
+    <template>Here are the major free government health schemes available to you:
+1. AYUSHMAN BHARAT (PMJAY) — Free treatment up to ₹5 lakhs/year
+2. JSY — Cash for institutional delivery (₹1400 rural)
+3. JSSK — Free delivery, medicines, diet at govt hospitals
+4. DOTS (TB) — Free tuberculosis treatment
+5. RBSK — Free health screening for children 0-18 years
+Type the scheme name for more details. E.g. type AYUSHMAN BHARAT</template>
+  </category>
+
+  <category>
+    <pattern>WHAT SCHEMES ARE AVAILABLE</pattern>
+    <template><srai>SCHEMES</srai></template>
+  </category>
+
+  <category>
+    <pattern>FREE TREATMENT</pattern>
+    <template><srai>SCHEMES</srai></template>
+  </category>
+
+  <category>
+    <pattern>FREE MEDICINE</pattern>
+    <template>Free medicines are available at all government PHCs and CHCs. For serious illness, Ayushman Bharat (PMJAY) covers medicines during hospital treatment up to ₹5 lakhs per year.
+Type AYUSHMAN BHARAT to check your eligibility.</template>
+  </category>
+
+  <!-- Ayushman Bharat -->
+  <category>
+    <pattern>AYUSHMAN BHARAT</pattern>
+    <template>Ayushman Bharat - PMJAY:
+Eligibility: Families in lowest 40% income group (as per SECC data)
+Benefit: Cashless treatment up to ₹5 LAKHS per year per family
+Where: All empanelled government and private hospitals
+How to Apply: Call 14555 or visit any empanelled hospital with Aadhaar card
+Website: pmjay.gov.in
+To check if your family is eligible, call 14555 — it is free.</template>
+  </category>
+
+  <category>
+    <pattern>PMJAY</pattern>
+    <template><srai>AYUSHMAN BHARAT</srai></template>
+  </category>
+
+  <category>
+    <pattern>AM I ELIGIBLE FOR AYUSHMAN BHARAT</pattern>
+    <template>To check Ayushman Bharat eligibility:
+1. Call 14555 (toll-free) — available 24x7
+2. Visit pmjay.gov.in and enter your mobile number or ration card number
+3. Visit your nearest government hospital — they can check on the spot
+You need: Aadhaar card or ration card for verification.</template>
+  </category>
+
+  <!-- JSY -->
+  <category>
+    <pattern>JSY</pattern>
+    <template>Janani Suraksha Yojana (JSY) — Safe Motherhood Scheme:
+Eligibility: Pregnant women from BPL families
+Benefit: Cash incentive of ₹1400 (rural) or ₹1000 (urban) for delivering at a government hospital
+How to Apply: Register at your nearest PHC during your first ANC check-up
+Also includes: Free antenatal check-ups, medicines, iron tablets
+Visit your nearest PHC as soon as pregnancy is confirmed.</template>
+  </category>
+
+  <category>
+    <pattern>MATERNITY SCHEME</pattern>
+    <template><srai>JSY</srai></template>
+  </category>
+
+  <category>
+    <pattern>PREGNANCY SCHEME</pattern>
+    <template><srai>JSY</srai></template>
+  </category>
+
+  <!-- JSSK -->
+  <category>
+    <pattern>JSSK</pattern>
+    <template>Janani Shishu Suraksha Karyakram (JSSK):
+For: ALL pregnant women and sick newborns at government hospitals
+Benefit: Completely FREE —
+  - Normal and C-section delivery
+  - Medicines and consumables
+  - Diagnostics and blood transfusion
+  - Diet during hospital stay
+  - Free transport from home to hospital and back
+How to access: Simply go to any government PHC, CHC, or District Hospital — no card needed.
+This is your RIGHT — no one can charge you at a government hospital for delivery.</template>
+  </category>
+
+  <!-- DOTS TB -->
+  <category>
+    <pattern>DOTS</pattern>
+    <template>DOTS — Free Tuberculosis Treatment:
+For: All TB patients in India — no income criteria
+Benefit: Free diagnosis (sputum test, X-ray) and full course of medicines
+Duration: 6 months of free medicine provided directly to you
+How to Apply: Visit nearest PHC with cough symptoms (especially cough for 2+ weeks)
+Website: nikshay.in
+You also get ₹500/month nutritional support under Nikshay Poshan Yojana during treatment.</template>
+  </category>
+
+  <category>
+    <pattern>FREE TB TREATMENT</pattern>
+    <template><srai>DOTS</srai></template>
+  </category>
+
+  <!-- RBSK -->
+  <category>
+    <pattern>RBSK</pattern>
+    <template>Rashtriya Bal Swasthya Karyakram (RBSK) — Child Health Screening:
+For: All children aged 0-18 years
+Benefit: Free screening and treatment for 30+ diseases, deficiencies, and disabilities
+How it works: Mobile health teams visit schools and Anganwadi centres automatically
+Covers: Eye problems, hearing defects, heart disease, malnutrition, learning disabilities
+No application needed — health teams come to your school or Anganwadi.</template>
+  </category>
+
+  <category>
+    <pattern>CHILD HEALTH SCHEME</pattern>
+    <template><srai>RBSK</srai></template>
+  </category>
+
+  <!-- Dialysis -->
+  <category>
+    <pattern>DIALYSIS</pattern>
+    <template>PM National Dialysis Programme:
+For: BPL patients with Chronic Kidney Disease
+Benefit: Free dialysis at district hospitals
+How to Apply: Bring PMJAY card + BPL certificate to your nearest District Hospital
+Ask for the dialysis unit at the hospital reception.</template>
+  </category>
+
+</aiml>

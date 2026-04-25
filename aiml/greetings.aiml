@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<aiml version="2.0">
+
+  <!-- Basic Greetings -->
+  <category>
+    <pattern>HELLO</pattern>
+    <template>Namaste! I am your Rural Health Assistant. I can help you with:
+1. Finding nearest hospitals and health centers
+2. First-aid advice for symptoms
+3. Government health schemes like Ayushman Bharat
+4. Emergency helpline numbers
+How can I help you today?</template>
+  </category>
+
+  <category>
+    <pattern>HI</pattern>
+    <template><srai>HELLO</srai></template>
+  </category>
+
+  <category>
+    <pattern>NAMASTE</pattern>
+    <template><srai>HELLO</srai></template>
+  </category>
+
+  <category>
+    <pattern>HEY</pattern>
+    <template><srai>HELLO</srai></template>
+  </category>
+
+  <!-- Help -->
+  <category>
+    <pattern>HELP</pattern>
+    <template>I can assist you with:
+- Type SYMPTOMS to get first-aid advice
+- Type HOSPITAL to find nearest health center
+- Type SCHEMES to know about free government health schemes
+- Type EMERGENCY for ambulance and helpline numbers
+What do you need help with?</template>
+  </category>
+
+  <category>
+    <pattern>WHAT CAN YOU DO</pattern>
+    <template><srai>HELP</srai></template>
+  </category>
+
+  <!-- Goodbye -->
+  <category>
+    <pattern>BYE</pattern>
+    <template>Thank you for using Rural Health Assistant. Stay healthy! In case of emergency always call 108 for ambulance. Goodbye!</template>
+  </category>
+
+  <category>
+    <pattern>THANK YOU</pattern>
+    <template>You are welcome! Your health is our priority. Is there anything else I can help you with?</template>
+  </category>
+
+  <category>
+    <pattern>THANKS</pattern>
+    <template><srai>THANK YOU</srai></template>
+  </category>
+
+</aiml>
